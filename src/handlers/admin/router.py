@@ -29,42 +29,39 @@ async def delete_course_handler(callback_query: CallbackQuery):
         keyboard=ADMIN_KEYBOARD
     )
 
-
-@admin.callback_query(StateFilter(None), F.data.startswith("update_"))
-async def update_handler(callback_query: CallbackQuery):
-    await course_interface.update_callback(callback_query=callback_query, keyboard=UPDATE_KEYBOARD)
-
-
-@admin.message(Command("обновить название курса"))
-@admin.message(F.text == 'обновить название курса')
-async def start_update_course_title(message: Message, state: FSMContext):
-    await course_interface.start_update_title(message, state)
+#
+# @admin.callback_query(StateFilter(None), F.data.startswith("update_"))
+# async def update_handler(callback_query: CallbackQuery):
+#     await course_interface.update_callback(callback_query=callback_query, keyboard=UPDATE_KEYBOARD)
 
 
-@admin.message(AddCourse.title, F.text)
-async def update_course_title_handler(message: Message, state: FSMContext):
-    await course_interface.update_title(message, state)
+# @admin.message(StateFilter(None),Command("обновить название курса"))
+# async def start_update_course_title(message: Message, state: FSMContext):
+#     await course_interface.start_update_title(message, state)
+#
+#
+# @admin.message(UpdateCourse.title, F.text)
+# async def update_course_title_handler(message: Message, state: FSMContext):
+#     await course_interface.update_title(message, state)
 
 
-@admin.message(Command("обновить описание"))
-@admin.message(F.text == "обновить описание")
-async def start_update_course_description(message: Message, state: FSMContext):
-    await course_interface.start_update_description(message, state)
-
-
-@admin.message(AddCourse.description, F.text)
-async def update_course_description_handler(message: Message, state: FSMContext):
-    await course_interface.update_description(message, state)
-
-
-@admin.message(Command("Обновить фото"))
-@admin.message(F.text == "Обновить фото")
-async def start_update_course_media(message: Message, state: FSMContext):
-    await course_interface.start_update_media(message, state)
-
-@admin.message(UpdateCourse.media_url, F.photo)
-async def update_course_media_handler(message: Message, state: FSMContext):
-    await course_interface.update_media(message, state)
+# @admin.message(StateFilter(None),Command("обновить описание"))
+# async def start_update_course_description(message: Message, state: FSMContext):
+#     await course_interface.start_update_description(message, state)
+#
+#
+# @admin.message(UpdateCourse.description, F.text)
+# async def update_course_description_handler(message: Message, state: FSMContext):
+#     await course_interface.update_description(message, state)
+#
+#
+# @admin.message(StateFilter(None),Command("Обновить фото"))
+# async def start_update_course_media(message: Message, state: FSMContext):
+#     await course_interface.start_update_media(message, state)
+#
+# @admin.message(UpdateCourse.media_url, F.photo)
+# async def update_course_media_handler(message: Message, state: FSMContext):
+#     await course_interface.update_media(message, state)
 
 
 @admin.message(StateFilter(None), Command("Добавить курс"))
