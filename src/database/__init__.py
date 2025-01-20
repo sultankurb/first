@@ -1,3 +1,3 @@
-__all__ = ["Model"]
+__all__ = ["Base"]
 
-from .base import Model
+from .base import Base

@@ -1,12 +1,5 @@
-__all__ = [
-    "CoursesORM",
-    "CoursesBaseModel",
-    "PostsORM",
-    "EventORM",
-    "EventModel",
-    "PostsModel",
-]
+__all__ = ["Course", "Event"]
 
-from .courses import CoursesORM, CoursesBaseModel
-from .event import EventORM, EventModel
-from .posts import PostsORM, PostsModel
+
+from .courses import Course
+from .events import Event
