@@ -17,7 +17,19 @@ class AddCourse(StatesGroup):
     }
 
 
-class UpdateCourse(AddCourse):
+class UpdateTitle(StatesGroup):
+    title = State()
+
+    for_update = None
+
+class UpdateDescription(StatesGroup):
+    description = State()
+
+    for_update = None
+
+class UpdateMedia(StatesGroup):
+    media_url = State()
+
     for_update = None
 
 
@@ -33,7 +45,10 @@ class CourseInterfaceAdmin(AdminInterface):
                     caption=f"{course.title}\n{course.description}",
                     reply_markup=get_callback_buttons(
                         btns={
-                            "Удалить": f"delete_{course.pk}", "update": f"update_{course.pk}"
+                            "Удалить": f"delete_{course.pk}",
+                            "обновить заголовок": f"title_{course.pk}",
+                            "обновите описание": f"description_{course.pk}",
+                            "обновите фотографию": f"media_{course.pk}"
                         }                    )
                 )
         else:
@@ -44,60 +59,62 @@ class CourseInterfaceAdmin(AdminInterface):
         await self.delete_one(pk=int(course_id))
         await callback_query.answer(text="Курс был удален", show_alert=True)
         await callback_query.message.answer(text="Курс был удален", reply_markup=keyboard)
-    #
-    # async def update_callback(self, callback_query: CallbackQuery, keyboard):
-    #     course_id = callback_query.data.split("_")[-1]
-    #     update_data = await self.get_one(pk=int(course_id))
-    #     UpdateCourse.for_update = update_data
-    #     await callback_query.message.answer(text="Выберите что вы хотите обновить", reply_markup=keyboard)
-    #
-    # @classmethod
-    # async def start_update_title(
-    #         cls,
-    #         message: Message,
-    #         state: FSMContext,
-    # ):
-    #     await state.set_state(UpdateCourse.title)
-    #     await message.answer(text=f"Отправьте мне новый загаловок")
-    #
-    # async def update_title(self, message: Message, state: FSMContext):
-    #     await state.update_data(title=message.text)
-    #     title = await state.get_data()
-    #     await self.edit_one(pk=UpdateCourse.for_update.pk, data={"title": title})
-    #     await state.clear()
-    #     UpdateCourse.for_update = None
-    #
-    # @classmethod
-    # async def start_update_description(
-    #         cls,
-    #         message: Message,
-    #         state: FSMContext,
-    # ):
-    #     await state.set_state(UpdateCourse.description)
-    #     await message.answer(text=f"Отправьте мне новое описание")
-    #
-    # async def update_description(self, message: Message, state: FSMContext):
-    #     await state.update_data(description=message.text)
-    #     description = await state.get_data()
-    #     await self.edit_one(pk=UpdateCourse.for_update.pk, data={"description": description})
-    #     await state.clear()
-    #     UpdateCourse.for_update = None
-    #
-    # @classmethod
-    # async def start_update_media(
-    #         cls,
-    #         message: Message,
-    #         state: FSMContext,
-    # ):
-    #     await state.set_state(UpdateCourse.media_url)
-    #     await message.answer(text=f"Отправьте мне новое фото")
-    #
-    # async def update_media(self, message: Message, state: FSMContext):
-    #     await state.update_data(media_url=message.photo[-1].file_id)
-    #     media = await state.get_data()
-    #     await self.edit_one(pk=UpdateCourse.for_update.pk, data={"media_url": media})
-    #     await state.clear()
-    #     UpdateCourse.for_update = None
+
+    async def update_title_callback(self, callback_query: CallbackQuery, state: FSMContext):
+        course_id = callback_query.data.split("_")[-1]
+        data = await self.get_one(pk=int(course_id))
+        UpdateTitle.for_update = data
+        await state.set_state(UpdateTitle.title)
+        await callback_query.message.answer(
+            text="Пришлите, пожалуйста, новое название",
+            reply_markup=ReplyKeyboardRemove()
+        )
+
+
+    async def update_title(self, state: FSMContext, message: Message, keyboard):
+        await state.update_data(title=message.text)
+        data = await state.get_data()
+        await self.edit_one(pk=UpdateTitle.for_update.pk, data=data)
+        await message.answer(text="название было обновлено", reply_markup=keyboard)
+        await state.clear()
+        UpdateTitle.for_update = None
+
+    async def update_description_callback(self, callback_query: CallbackQuery, state: FSMContext):
+        course_id = callback_query.data.split("_")[-1]
+        data = await self.get_one(pk=int(course_id))
+        UpdateDescription.for_update = data
+        await state.set_state(UpdateDescription.description)
+        await callback_query.message.answer(
+            text="Пришлите, пожалуйста, новое описание",
+            reply_markup=ReplyKeyboardRemove()
+        )
+
+    async def update_description(self, state: FSMContext, message: Message, keyboard):
+        await state.update_data(description=message.text)
+        data = await state.get_data()
+        await self.edit_one(pk=UpdateDescription.for_update.pk, data=data)
+        await message.answer(text="описание было обновлено", reply_markup=keyboard)
+        await state.clear()
+        UpdateDescription.for_update = None
+
+    async def update_media_callback(self, callback_query: CallbackQuery, state: FSMContext):
+        course_id = callback_query.data.split("_")[-1]
+        data = await self.get_one(pk=int(course_id))
+        UpdateMedia.for_update = data
+        await state.set_state(UpdateMedia.media_url)
+        await callback_query.message.answer(
+            text="пришлите, пожалуйста, новую фотографию",
+            reply_markup=ReplyKeyboardRemove()
+        )
+
+    async def update_media(self, state: FSMContext, message: Message, keyboard):
+        await state.update_data(media_url=message.photo[-1].file_id)
+        data = await state.get_data()
+        await self.edit_one(pk=UpdateMedia.for_update.pk, data=data)
+        await message.answer(text="фотография была обновлена", reply_markup=keyboard)
+        await state.clear()
+        UpdateMedia.for_update = None
+
 
     @classmethod
     async def start_add_new_course(cls, message: Message, state: FSMContext):
