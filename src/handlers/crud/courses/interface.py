@@ -1,36 +1,9 @@
+from .states import AddCourse, UpdatePrice, UpdateDescription, UpdateTitle, UpdateMedia
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 from src.keyboards.in_line import get_callback_buttons
 from src.utils import AdminInterface, UsersInterface
-from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from src.database.models import Course
-
-
-class AddCourse(StatesGroup):
-    title = State()
-    description = State()
-    media_url = State()
-    texts = {
-        "AddTasks:title": "Пришлете мне название нового курса:",
-        "AddTasks:description": "А теперь пришлите мне описание этого курса:",
-        "AddTasks:image_url": "Это было последнее состояние...",
-    }
-
-
-class UpdateTitle(StatesGroup):
-    title = State()
-
-    for_update = None
-
-class UpdateDescription(StatesGroup):
-    description = State()
-
-    for_update = None
-
-class UpdateMedia(StatesGroup):
-    media_url = State()
-
-    for_update = None
 
 
 class CourseInterfaceAdmin(AdminInterface):
@@ -42,14 +15,16 @@ class CourseInterfaceAdmin(AdminInterface):
             for course in course_list:
                 await message.answer_photo(
                     photo=course.media_url,
-                    caption=f"{course.title}\n{course.description}",
+                    caption=f"{course.title}\n{course.description}\n{course.price}",
                     reply_markup=get_callback_buttons(
                         btns={
                             "Удалить": f"delete_{course.pk}",
                             "обновить заголовок": f"title_{course.pk}",
                             "обновите описание": f"description_{course.pk}",
-                            "обновите фотографию": f"media_{course.pk}"
-                        }                    )
+                            "обновите фотографию": f"media_{course.pk}",
+                            "обновите цену": f'price_{course.pk}'
+                        }
+                    )
                 )
         else:
             await message.answer(text="здесь ничего нет пока что")
@@ -115,6 +90,25 @@ class CourseInterfaceAdmin(AdminInterface):
         await state.clear()
         UpdateMedia.for_update = None
 
+    async def update_price_callback(self, state: FSMContext, callback_query: CallbackQuery):
+        course_pk = callback_query.data.split("_")[-1]
+        data = await self.get_one(pk=int(course_pk))
+        UpdatePrice.for_update = data
+        await state.set_state(UpdatePrice.price)
+        await callback_query.message.answer(
+            text="пришлите, пожалуйста, новую цену",
+            reply_markup=ReplyKeyboardRemove()
+        )
+
+    async def update_price(self, message: Message, state: FSMContext, keyboard):
+        await state.update_data(price=int(message.text))
+        data = await state.get_data()
+        await message.answer(text='цена была обновлена', reply_markup=keyboard)
+        await self.edit_one(pk=UpdatePrice.for_update.pk, data=data)
+        await state.clear()
+        UpdatePrice.for_update = None
+
+
 
     @classmethod
     async def start_add_new_course(cls, message: Message, state: FSMContext):
@@ -133,12 +127,18 @@ class CourseInterfaceAdmin(AdminInterface):
         await message.answer(text="Хорошо, отправьте мне изображение")
         await state.set_state(AddCourse.media_url)
 
-    async def add_media(self, message: Message, state: FSMContext, keyboard):
+    @classmethod
+    async def add_media(cls, message: Message, state: FSMContext):
         await state.update_data(media_url=message.photo[-1].file_id)
-        await message.answer(text='Окей курс был добавлен', reply_markup=keyboard)
+        await message.answer(text='Окей, пришлите мне цену')
+        await state.set_state(AddCourse.price)
+
+    async def add_price(self, message: Message, state: FSMContext, keyboard):
+        await state.update_data(price=int(message.text))
         data = await state.get_data()
+        print(data)
         await self.add_one(data=data)
-        await state.clear()
+        await message.answer(text="Курс был добавлен", reply_markup=keyboard)
 
     @classmethod
     async def cancel(cls, message: Message, state: FSMContext, keyboard):
