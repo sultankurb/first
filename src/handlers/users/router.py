@@ -1,4 +1,5 @@
 from src.handlers.crud.courses.interface import CourseForUsersInterface
+from src.handlers.crud.events import UsersEventsInterface
 from aiogram.filters import CommandStart, Command
 from src.database.models.users import UsersModel
 from src.handlers.crud.users import UsersManager
@@ -7,7 +8,8 @@ from aiogram import Router
 
 
 users = Router()
-interface = CourseForUsersInterface()
+course_user_interface = CourseForUsersInterface()
+event_user_interface = UsersEventsInterface()
 manager = UsersManager()
 
 
@@ -30,4 +32,9 @@ async def hello_user_handler(message: Message):
 
 @users.message(Command("courses"))
 async def courses_list(message: Message):
-    await interface.send_all_courses(message=message)
+    await course_user_interface.send_all_courses(message=message)
+
+
+@users.message(Command("events"))
+async def courses_list(message: Message):
+    await event_user_interface.send_all(message=message)

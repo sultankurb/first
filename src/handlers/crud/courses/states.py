@@ -14,23 +14,23 @@ class AddCourse(StatesGroup):
     }
 
 
-class UpdateTitle(StatesGroup):
-    title = State()
+class UpdateTitleCourses(StatesGroup):
+    title_courses = State()
 
     for_update = None
 
-class UpdateDescription(StatesGroup):
-    description = State()
+class UpdateDescriptionCourses(StatesGroup):
+    description_Courses = State()
 
     for_update = None
 
-class UpdateMedia(StatesGroup):
-    media_url = State()
+class UpdateMediaCourses(StatesGroup):
+    media_url_courses = State()
 
     for_update = None
 
 
-class UpdatePrice(StatesGroup):
-    price = State()
+class UpdatePriceCourses(StatesGroup):
+    price_courses = State()
 
     for_update = None

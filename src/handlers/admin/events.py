@@ -1,10 +1,10 @@
 from src.handlers.crud.events import (
     EventsInterface,
     AddEvent,
-    UpdateTitle,
-    UpdateDescription,
-    UpdateMedia,
-    UpdateActive
+    UpdateTitleEvent,
+    UpdateDescriptionEvent,
+    UpdateMediaEvent,
+    UpdateActiveEvent
 )
 from src.handlers.admin.keyboard import ADMIN_KEYBOARD
 from aiogram.types import Message, CallbackQuery
@@ -31,41 +31,41 @@ async def delete_course_handler(callback_query: CallbackQuery):
     )
 
 
-@router.callback_query(StateFilter(None), F.data.startswith("title_"))
+@router.callback_query(StateFilter(None), F.data.startswith("evnettitle_"))
 async def edit_title_callback(callback_query: CallbackQuery, state: FSMContext):
     await events_interface.update_title_callback(callback_query=callback_query, state=state)
 
 
-@router.message(UpdateTitle.title, F.text)
+@router.message(UpdateTitleEvent.title_event, F.text)
 async def edit_title(message: Message, state: FSMContext):
     await events_interface.update_title(state=state, message=message, keyboard=ADMIN_KEYBOARD)
 
 
-@router.callback_query(StateFilter(None), F.data.startswith("description_"))
+@router.callback_query(StateFilter(None), F.data.startswith("evntdescription_"))
 async def edit_description_callback(callback_query: CallbackQuery, state: FSMContext):
     await events_interface.update_description_callback(callback_query=callback_query, state=state)
 
 
-@router.message(UpdateDescription.description, F.text)
+@router.message(UpdateDescriptionEvent.description_event, F.text)
 async def edit_description(message: Message, state: FSMContext):
     await events_interface.update_description(state=state, message=message, keyboard=ADMIN_KEYBOARD)
 
 
-@router.callback_query(StateFilter(None), F.data.startswith("photo_"))
+@router.callback_query(StateFilter(None), F.data.startswith("evnetphoto_"))
 async def edit_media_callback(callback_query: CallbackQuery, state: FSMContext):
     await events_interface.update_media_callback(callback_query=callback_query, state=state)
 
-@router.message(UpdateMedia.media_url, F.photo)
+@router.message(UpdateMediaEvent.media_url_event, F.photo)
 async def edit_media(message: Message, state: FSMContext):
     await events_interface.update_media(state=state, message=message, keyboard=ADMIN_KEYBOARD)
 
 
-@router.callback_query(StateFilter(None), F.data.startswith("status_"))
+@router.callback_query(StateFilter(None), F.data.startswith("evnetstatus_"))
 async def edit_title_callback(callback_query: CallbackQuery, state: FSMContext):
     await events_interface.update_status_callback(callback_query=callback_query, state=state)
 
 
-@router.message(UpdateActive.active, F.text)
+@router.message(UpdateActiveEvent.active_event, F.text)
 async def edit_title(message: Message, state: FSMContext):
     await events_interface.update_status(state=state, message=message, keyboard=ADMIN_KEYBOARD)
 

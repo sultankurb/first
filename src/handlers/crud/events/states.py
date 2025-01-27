@@ -15,25 +15,25 @@ class AddEvent(StatesGroup):
     }
 
 
-class UpdateTitle(StatesGroup):
-    title = State()
+class UpdateTitleEvent(StatesGroup):
+    title_event = State()
 
     for_update = None
 
 
-class UpdateDescription(StatesGroup):
-    description = State()
+class UpdateDescriptionEvent(StatesGroup):
+    description_event = State()
 
     for_update = None
 
 
-class UpdateMedia(StatesGroup):
-    media_url = State()
+class UpdateMediaEvent(StatesGroup):
+    media_url_event = State()
 
     for_update = None
 
 
-class UpdateActive(StatesGroup):
-    active = State()
+class UpdateActiveEvent(StatesGroup):
+    active_event = State()
 
     for_update = None

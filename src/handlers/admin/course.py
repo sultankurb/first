@@ -1,11 +1,11 @@
-from src.handlers.crud.courses.interface import (
+from src.handlers.crud.courses import (
     CourseInterfaceAdmin,
-    UpdateTitle,
-    UpdateMedia,
-    UpdateDescription,
+    UpdateTitleCourses,
+    UpdateMediaCourses,
+    UpdatePriceCourses,
+    UpdateDescriptionCourses,
     AddCourse
 )
-from src.handlers.crud.courses import UpdatePrice
 from src.handlers.admin.keyboard import ADMIN_KEYBOARD
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters.state import StateFilter
@@ -74,7 +74,7 @@ async def edit_title_callback(callback_query: CallbackQuery, state: FSMContext):
     await course_interface.update_title_callback(callback_query=callback_query, state=state)
 
 
-@router.message(UpdateTitle.title, F.text)
+@router.message(UpdateTitleCourses.title_courses, F.text)
 async def edit_title(message: Message, state: FSMContext):
     await course_interface.update_title(state=state, message=message, keyboard=ADMIN_KEYBOARD)
 
@@ -84,7 +84,7 @@ async def edit_description_callback(callback_query: CallbackQuery, state: FSMCon
     await course_interface.update_description_callback(callback_query=callback_query, state=state)
 
 
-@router.message(UpdateDescription.description, F.text)
+@router.message(UpdateDescriptionCourses.description_Courses, F.text)
 async def edit_description(message: Message, state: FSMContext):
     await course_interface.update_description(state=state, message=message, keyboard=ADMIN_KEYBOARD)
 
@@ -93,7 +93,7 @@ async def edit_description(message: Message, state: FSMContext):
 async def edit_media_callback(callback_query: CallbackQuery, state: FSMContext):
     await course_interface.update_media_callback(callback_query=callback_query, state=state)
 
-@router.message(UpdateMedia.media_url, F.photo)
+@router.message(UpdateMediaCourses.media_url_courses, F.photo)
 async def edit_media(message: Message, state: FSMContext):
     await course_interface.update_media(state=state, message=message, keyboard=ADMIN_KEYBOARD)
 
@@ -102,6 +102,6 @@ async def edit_media(message: Message, state: FSMContext):
 async def edit_price_callback(callback_query: CallbackQuery, state: FSMContext):
     await course_interface.update_price_callback(callback_query=callback_query, state=state)
 
-@router.message(UpdatePrice.price, F.text)
+@router.message(UpdatePriceCourses.price_courses, F.text)
 async def edit_price(message: Message, state: FSMContext):
     await course_interface.update_price(state=state, message=message, keyboard=ADMIN_KEYBOARD)

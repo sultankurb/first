@@ -1,15 +1,17 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 from src.keyboards.in_line import get_callback_buttons
+from src.settings import async_session_maker
+from src.utils import AdminInterface, UsersInterface
 from aiogram.fsm.context import FSMContext
 from src.database.models import Event
 from .send_events import send_event
-from src.utils import AdminInterface
+from sqlalchemy import select
 from .states import (
     AddEvent,
-    UpdateActive,
-    UpdateMedia,
-    UpdateTitle,
-    UpdateDescription
+    UpdateMediaEvent,
+    UpdateTitleEvent,
+    UpdateActiveEvent,
+    UpdateDescriptionEvent,
 )
 
 
@@ -25,10 +27,10 @@ class EventsInterface(AdminInterface):
                     caption=f"{i.title}\n{i.description}\n{i.is_active}",
                     reply_markup=get_callback_buttons(
                         btns={
-                            "заглавие": f"title_{i.pk}",
-                            "описание": f"description_{i.pk}",
-                            "фото": f"photo_{i.pk}",
-                            "статус": f"status_{i.is_active}",
+                            "заглавие": f"evnttitle_{i.pk}",
+                            "описание": f"evntdescription_{i.pk}",
+                            "фото": f"evntphoto_{i.pk}",
+                            "статус": f"evntstatus_{i.is_active}",
                             "удалить": f"eventdelete_{i.pk}"
                         }
                     )
@@ -82,58 +84,59 @@ class EventsInterface(AdminInterface):
 
     async def update_title_callback(self, callback_query: CallbackQuery, state: FSMContext):
         event = await self.get_one(pk=int(callback_query.data.split("_")[-1]))
-        UpdateTitle.for_update = event
-        await state.set_state(UpdateTitle.title)
+        UpdateTitleEvent.for_update = event
+        await state.set_state(UpdateTitleEvent.title_event)
         await callback_query.message.answer(text='Пришлите, пожалуйста, новое название', reply_markup=ReplyKeyboardRemove())
 
     async def update_title(self, message: Message, state: FSMContext, keyboard):
         await state.update_data(title=message.text)
         data = await state.get_data()
-        await self.edit_one(pk=UpdateTitle.for_update.pk, data=data)
+        await self.edit_one(pk=UpdateTitleEvent.for_update.pk, data=data)
         await message.answer(text='название было обновлено', reply_markup=keyboard)
-        UpdateTitle.for_update = None
+        UpdateTitleEvent.for_update = None
         await state.clear()
 
     async def update_description_callback(self, callback_query: CallbackQuery, state: FSMContext):
         event = await self.get_one(pk=int(callback_query.data.split("_")[-1]))
-        UpdateDescription.for_update = event
-        await state.set_state(UpdateDescription.description)
+        UpdateDescriptionEvent.for_update = event
+        await state.set_state(UpdateDescriptionEvent.description_event)
         await callback_query.message.answer(text='Пришлите, пожалуйста, новое описание', reply_markup=ReplyKeyboardRemove())
 
     async def update_description(self, message: Message, state: FSMContext, keyboard):
         await state.update_data(description=message.text)
         data = await state.get_data()
-        await self.edit_one(pk=UpdateDescription.for_update.pk, data=data)
+        await self.edit_one(pk=UpdateDescriptionEvent.for_update.pk, data=data)
         await message.answer(text="описание было обновлено", reply_markup=keyboard)
-        UpdateDescription.for_update = None
+        UpdateDescriptionEvent.for_update = None
         await state.clear()
 
     async def update_media_callback(self, callback_query: CallbackQuery, state: FSMContext):
         event = await self.get_one(pk=int(callback_query.data.split("_")[-1]))
-        UpdateMedia.for_update = event
-        await state.set_state(UpdateMedia.media_url)
+        UpdateMediaEvent.for_update = event
+        await state.set_state(UpdateMediaEvent.media_url_event)
         await callback_query.message.answer(text='пришлите, пожалуйста, новую фотографию', reply_markup=ReplyKeyboardRemove())
 
     async def update_media(self, message: Message, state: FSMContext, keyboard):
         await state.update_data(media_url=message.photo[-1].file_id)
         data = await state.get_data()
-        await self.edit_one(pk=UpdateMedia.for_update.pk, data=data)
+        await self.edit_one(pk=UpdateMediaEvent.for_update.pk, data=data)
         await message.answer(text="фотография была обновлена", reply_markup=keyboard)
-        UpdateMedia.for_update = None
+        UpdateMediaEvent.for_update = None
         await state.clear()
 
     async def update_status_callback(self, callback_query: CallbackQuery, state: FSMContext):
+        pk = callback_query.data.split("_")[-1]
         event = await self.get_one(pk=int(callback_query.data.split("_")[-1]))
-        UpdateActive.for_update = event
-        await state.set_state(UpdateActive.active)
+        UpdateActiveEvent.for_update = event
+        await state.set_state(UpdateActiveEvent.active_event)
         await callback_query.message.answer(text='Пришлите мне новый статус', reply_markup=ReplyKeyboardRemove())
 
     async def update_status(self, message: Message, state: FSMContext, keyboard):
         await state.update_data(media_url=message.photo[-1].file_id)
         data = await state.get_data()
-        await self.edit_one(pk=UpdateActive.for_update.pk, data=data)
+        await self.edit_one(pk=UpdateActiveEvent.for_update.pk, data=data)
         await message.answer(text='Статус был обновлен', reply_markup=keyboard)
-        UpdateActive.for_update = None
+        UpdateActiveEvent.for_update = None
         await state.clear()
 
     @classmethod
@@ -164,3 +167,23 @@ class EventsInterface(AdminInterface):
                 return
             previous = step
 
+
+class UsersEventsInterface(UsersInterface):
+    model = Event
+
+    async def __select_filtered(self):
+        async with async_session_maker() as session:
+            stmt = select(self.model).filter_by(is_active=True)
+            result = await session.execute(stmt)
+            return result.scalars().all()
+
+    async def send_all(self, message: Message):
+        events_list = await self.__select_filtered()
+        if events_list:
+            for event in events_list:
+                await message.answer_photo(
+                    photo=event.media_url,
+                    caption=f"{event.title}\n\n{event.description}"
+                )
+        else:
+            await message.answer(text='нет никаких событий')

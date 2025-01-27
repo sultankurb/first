@@ -2,10 +2,10 @@ __all__ = [
     "CourseInterfaceAdmin",
     "CourseForUsersInterface",
     "AddCourse",
-    "UpdateTitle",
-    "UpdatePrice",
-    "UpdateMedia",
-    "UpdateDescription"
+    "UpdateTitleCourses",
+    "UpdatePriceCourses",
+    "UpdateMediaCourses",
+    "UpdateDescriptionCourses"
 ]
 
 from .interface import (
@@ -14,8 +14,8 @@ from .interface import (
 )
 from .states import (
     AddCourse,
-    UpdateTitle,
-    UpdatePrice,
-    UpdateMedia,
-    UpdateDescription
+    UpdateTitleCourses,
+    UpdatePriceCourses,
+    UpdateMediaCourses,
+    UpdateDescriptionCourses
 )

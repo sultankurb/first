@@ -1,11 +1,12 @@
 __all__ = [
     'EventsInterface',
-    'UpdateTitle',
-    'UpdateDescription',
-    'UpdateMedia',
-    'UpdateActive',
-    'AddEvent'
+    'UpdateTitleEvent',
+    'UpdateDescriptionEvent',
+    'UpdateMediaEvent',
+    'UpdateActiveEvent',
+    'AddEvent',
+    'UsersEventsInterface'
 ]
 
-from .interface import EventsInterface
-from .states import AddEvent, UpdateMedia, UpdateTitle, UpdateActive, UpdateDescription
+from .interface import EventsInterface, UsersEventsInterface
+from .states import AddEvent, UpdateMediaEvent, UpdateTitleEvent, UpdateActiveEvent, UpdateDescriptionEvent

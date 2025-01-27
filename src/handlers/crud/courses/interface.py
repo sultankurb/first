@@ -1,4 +1,10 @@
-from .states import AddCourse, UpdatePrice, UpdateDescription, UpdateTitle, UpdateMedia
+from .states import (
+    AddCourse,
+    UpdatePriceCourses,
+    UpdateDescriptionCourses,
+    UpdateTitleCourses,
+    UpdateMediaCourses
+)
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 from src.keyboards.in_line import get_callback_buttons
 from src.utils import AdminInterface, UsersInterface
@@ -38,8 +44,8 @@ class CourseInterfaceAdmin(AdminInterface):
     async def update_title_callback(self, callback_query: CallbackQuery, state: FSMContext):
         course_id = callback_query.data.split("_")[-1]
         data = await self.get_one(pk=int(course_id))
-        UpdateTitle.for_update = data
-        await state.set_state(UpdateTitle.title)
+        UpdateTitleCourses.for_update = data
+        await state.set_state(UpdateTitleCourses.title_courses)
         await callback_query.message.answer(
             text="Пришлите, пожалуйста, новое название",
             reply_markup=ReplyKeyboardRemove()
@@ -49,16 +55,16 @@ class CourseInterfaceAdmin(AdminInterface):
     async def update_title(self, state: FSMContext, message: Message, keyboard):
         await state.update_data(title=message.text)
         data = await state.get_data()
-        await self.edit_one(pk=UpdateTitle.for_update.pk, data=data)
+        await self.edit_one(pk=UpdateTitleCourses.for_update.pk, data=data)
         await message.answer(text="название было обновлено", reply_markup=keyboard)
         await state.clear()
-        UpdateTitle.for_update = None
+        UpdateTitleCourses.for_update = None
 
     async def update_description_callback(self, callback_query: CallbackQuery, state: FSMContext):
         course_id = callback_query.data.split("_")[-1]
         data = await self.get_one(pk=int(course_id))
-        UpdateDescription.for_update = data
-        await state.set_state(UpdateDescription.description)
+        UpdateDescriptionCourses.for_update = data
+        await state.set_state(UpdateDescriptionCourses.description_Courses)
         await callback_query.message.answer(
             text="Пришлите, пожалуйста, новое описание",
             reply_markup=ReplyKeyboardRemove()
@@ -67,16 +73,16 @@ class CourseInterfaceAdmin(AdminInterface):
     async def update_description(self, state: FSMContext, message: Message, keyboard):
         await state.update_data(description=message.text)
         data = await state.get_data()
-        await self.edit_one(pk=UpdateDescription.for_update.pk, data=data)
+        await self.edit_one(pk=UpdateDescriptionCourses.for_update.pk, data=data)
         await message.answer(text="описание было обновлено", reply_markup=keyboard)
         await state.clear()
-        UpdateDescription.for_update = None
+        UpdateDescriptionCourses.for_update = None
 
     async def update_media_callback(self, callback_query: CallbackQuery, state: FSMContext):
         course_id = callback_query.data.split("_")[-1]
         data = await self.get_one(pk=int(course_id))
-        UpdateMedia.for_update = data
-        await state.set_state(UpdateMedia.media_url)
+        UpdateMediaCourses.for_update = data
+        await state.set_state(UpdateMediaCourses.media_url_courses)
         await callback_query.message.answer(
             text="пришлите, пожалуйста, новую фотографию",
             reply_markup=ReplyKeyboardRemove()
@@ -85,16 +91,16 @@ class CourseInterfaceAdmin(AdminInterface):
     async def update_media(self, state: FSMContext, message: Message, keyboard):
         await state.update_data(media_url=message.photo[-1].file_id)
         data = await state.get_data()
-        await self.edit_one(pk=UpdateMedia.for_update.pk, data=data)
+        await self.edit_one(pk=UpdateMediaCourses.for_update.pk, data=data)
         await message.answer(text="фотография была обновлена", reply_markup=keyboard)
         await state.clear()
-        UpdateMedia.for_update = None
+        UpdateMediaCourses.for_update = None
 
     async def update_price_callback(self, state: FSMContext, callback_query: CallbackQuery):
         course_pk = callback_query.data.split("_")[-1]
         data = await self.get_one(pk=int(course_pk))
-        UpdatePrice.for_update = data
-        await state.set_state(UpdatePrice.price)
+        UpdatePriceCourses.for_update = data
+        await state.set_state(UpdatePriceCourses.price_courses)
         await callback_query.message.answer(
             text="пришлите, пожалуйста, новую цену",
             reply_markup=ReplyKeyboardRemove()
@@ -104,9 +110,9 @@ class CourseInterfaceAdmin(AdminInterface):
         await state.update_data(price=int(message.text))
         data = await state.get_data()
         await message.answer(text='цена была обновлена', reply_markup=keyboard)
-        await self.edit_one(pk=UpdatePrice.for_update.pk, data=data)
+        await self.edit_one(pk=UpdatePriceCourses.for_update.pk, data=data)
         await state.clear()
-        UpdatePrice.for_update = None
+        UpdatePriceCourses.for_update = None
 
 
 
