@@ -7,7 +7,7 @@ from aiogram import Bot
 
 async def get_users():
     async with async_session_maker() as session:
-        stmt = select(User).filter_by(is_blocked=False)
+        stmt = select(User).filter_by(is_blocked=False).filter_by(is_admin=False)
         result = await session.execute(stmt)
         return result.scalars().all()
 

@@ -22,10 +22,24 @@ class EventsInterface(AdminInterface):
             for i in events:
                 await message.answer_photo(
                     photo=i.media_url,
-                    caption=f"{i.title}\n{i.description}\n{i.is_active}"
+                    caption=f"{i.title}\n{i.description}\n{i.is_active}",
+                    reply_markup=get_callback_buttons(
+                        btns={
+                            "заглавие": f"title_{i.pk}",
+                            "описание": f"description_{i.pk}",
+                            "фото": f"photo_{i.pk}",
+                            "статус": f"status_{i.is_active}",
+                            "удалить": f"eventdelete_{i.pk}"
+                        }
+                    )
                 )
         else:
             await message.answer(text='здесь ничего нет пока что')
+
+    async def delete_callback(self, callback_query: CallbackQuery):
+        pk = callback_query.data.split("_")[-1]
+        await self.delete_one(pk=int(pk))
+        await callback_query.message.answer(text="событие было удалено")
 
     @classmethod
     async def start_create(cls, message: Message, state: FSMContext):
@@ -64,6 +78,7 @@ class EventsInterface(AdminInterface):
         await message.answer(text="событие было добавлено", reply_markup=keyboard)
         await send_event(new_data=data)
         await self.add_one(data=data)
+        await state.clear()
 
     async def update_title_callback(self, callback_query: CallbackQuery, state: FSMContext):
         event = await self.get_one(pk=int(callback_query.data.split("_")[-1]))
@@ -96,7 +111,7 @@ class EventsInterface(AdminInterface):
     async def update_media_callback(self, callback_query: CallbackQuery, state: FSMContext):
         event = await self.get_one(pk=int(callback_query.data.split("_")[-1]))
         UpdateMedia.for_update = event
-        await state.set_state(UpdateMedia.media)
+        await state.set_state(UpdateMedia.media_url)
         await callback_query.message.answer(text='пришлите, пожалуйста, новую фотографию', reply_markup=ReplyKeyboardRemove())
 
     async def update_media(self, message: Message, state: FSMContext, keyboard):

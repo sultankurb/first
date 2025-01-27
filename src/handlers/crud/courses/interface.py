@@ -18,11 +18,11 @@ class CourseInterfaceAdmin(AdminInterface):
                     caption=f"{course.title}\n{course.description}\n{course.price}",
                     reply_markup=get_callback_buttons(
                         btns={
-                            "Удалить": f"delete_{course.pk}",
-                            "обновить заголовок": f"title_{course.pk}",
-                            "обновите описание": f"description_{course.pk}",
-                            "обновите фотографию": f"media_{course.pk}",
-                            "обновите цену": f'price_{course.pk}'
+                            "Удалить": f"coursedelete_{course.pk}",
+                            "обновить заголовок": f"coursetitle_{course.pk}",
+                            "обновите описание": f"coursedescription_{course.pk}",
+                            "обновите фотографию": f"coursemedia_{course.pk}",
+                            "обновите цену": f'courseprice_{course.pk}'
                         }
                     )
                 )

@@ -24,6 +24,53 @@ async def get_all_events(message: Message):
     await events_interface.send_events(message=message)
 
 
+@router.callback_query(F.data.startswith("eventdelete_"))
+async def delete_course_handler(callback_query: CallbackQuery):
+    await events_interface.delete_callback(
+        callback_query=callback_query
+    )
+
+
+@router.callback_query(StateFilter(None), F.data.startswith("title_"))
+async def edit_title_callback(callback_query: CallbackQuery, state: FSMContext):
+    await events_interface.update_title_callback(callback_query=callback_query, state=state)
+
+
+@router.message(UpdateTitle.title, F.text)
+async def edit_title(message: Message, state: FSMContext):
+    await events_interface.update_title(state=state, message=message, keyboard=ADMIN_KEYBOARD)
+
+
+@router.callback_query(StateFilter(None), F.data.startswith("description_"))
+async def edit_description_callback(callback_query: CallbackQuery, state: FSMContext):
+    await events_interface.update_description_callback(callback_query=callback_query, state=state)
+
+
+@router.message(UpdateDescription.description, F.text)
+async def edit_description(message: Message, state: FSMContext):
+    await events_interface.update_description(state=state, message=message, keyboard=ADMIN_KEYBOARD)
+
+
+@router.callback_query(StateFilter(None), F.data.startswith("photo_"))
+async def edit_media_callback(callback_query: CallbackQuery, state: FSMContext):
+    await events_interface.update_media_callback(callback_query=callback_query, state=state)
+
+@router.message(UpdateMedia.media_url, F.photo)
+async def edit_media(message: Message, state: FSMContext):
+    await events_interface.update_media(state=state, message=message, keyboard=ADMIN_KEYBOARD)
+
+
+@router.callback_query(StateFilter(None), F.data.startswith("status_"))
+async def edit_title_callback(callback_query: CallbackQuery, state: FSMContext):
+    await events_interface.update_status_callback(callback_query=callback_query, state=state)
+
+
+@router.message(UpdateActive.active, F.text)
+async def edit_title(message: Message, state: FSMContext):
+    await events_interface.update_status(state=state, message=message, keyboard=ADMIN_KEYBOARD)
+
+
+
 @router.message(StateFilter(None), Command("Добавить новое событие"))
 @router.message(StateFilter(None), F.text == "Добавить новое событие")
 async def add_handler(message: Message, state: FSMContext):

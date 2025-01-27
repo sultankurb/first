@@ -61,7 +61,7 @@ async def get_courses_list_handler(message: Message):
     await course_interface.send_all_courses(message=message)
 
 
-@router.callback_query(F.data.startswith("delete_"))
+@router.callback_query(F.data.startswith("coursedelete_"))
 async def delete_course_handler(callback_query: CallbackQuery):
     await course_interface.delete_course_callback(
         callback_query=callback_query,
@@ -69,7 +69,7 @@ async def delete_course_handler(callback_query: CallbackQuery):
     )
 
 
-@router.callback_query(StateFilter(None), F.data.startswith("title_"))
+@router.callback_query(StateFilter(None), F.data.startswith("coursetitle_"))
 async def edit_title_callback(callback_query: CallbackQuery, state: FSMContext):
     await course_interface.update_title_callback(callback_query=callback_query, state=state)
 
@@ -79,7 +79,7 @@ async def edit_title(message: Message, state: FSMContext):
     await course_interface.update_title(state=state, message=message, keyboard=ADMIN_KEYBOARD)
 
 
-@router.callback_query(StateFilter(None), F.data.startswith("description_"))
+@router.callback_query(StateFilter(None), F.data.startswith("coursedescription_"))
 async def edit_description_callback(callback_query: CallbackQuery, state: FSMContext):
     await course_interface.update_description_callback(callback_query=callback_query, state=state)
 
@@ -89,7 +89,7 @@ async def edit_description(message: Message, state: FSMContext):
     await course_interface.update_description(state=state, message=message, keyboard=ADMIN_KEYBOARD)
 
 
-@router.callback_query(StateFilter(None), F.data.startswith("media_"))
+@router.callback_query(StateFilter(None), F.data.startswith("coursemedia_"))
 async def edit_media_callback(callback_query: CallbackQuery, state: FSMContext):
     await course_interface.update_media_callback(callback_query=callback_query, state=state)
 
@@ -98,7 +98,7 @@ async def edit_media(message: Message, state: FSMContext):
     await course_interface.update_media(state=state, message=message, keyboard=ADMIN_KEYBOARD)
 
 
-@router.callback_query(StateFilter(None), F.data.startswith("price_"))
+@router.callback_query(StateFilter(None), F.data.startswith("courseprice_"))
 async def edit_price_callback(callback_query: CallbackQuery, state: FSMContext):
     await course_interface.update_price_callback(callback_query=callback_query, state=state)
 

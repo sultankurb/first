@@ -5,8 +5,10 @@ RUN pip install poetry
 COPY poetry.lock /app
 COPY pyproject.toml /app
 
-RUN cd /app
-RUN poetry install
+WORKDIR /app
+RUN poetry config virtualenvs.create false
+RUN poetry install --no-root
+
 COPY . /app
 
-CMD["cd /app/scripts", "&&", "./start.sh"]
+CMD alembic upgrade head && python3 main.py

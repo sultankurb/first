@@ -28,7 +28,7 @@ class UpdateDescription(StatesGroup):
 
 
 class UpdateMedia(StatesGroup):
-    media = State()
+    media_url = State()
 
     for_update = None
 
