@@ -62,7 +62,7 @@ class EventsInterface(AdminInterface):
             await state.update_data(is_active=False)
         data = await state.get_data()
         await message.answer(text="событие было добавлено", reply_markup=keyboard)
-        send_event(new_data=data)
+        await send_event(new_data=data)
         await self.add_one(data=data)
 
     async def update_title_callback(self, callback_query: CallbackQuery, state: FSMContext):
