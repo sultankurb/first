@@ -51,7 +51,7 @@ async def add_new_media_handler(message: Message, state: FSMContext):
     await course_interface.add_media(message=message, state=state)
 
 @router.message(AddCourse.price, F.text)
-async def add_new_media_handler(message: Message, state: FSMContext):
+async def add_price(message: Message, state: FSMContext):
     await course_interface.add_price(message=message, state=state, keyboard=ADMIN_KEYBOARD)
 
 

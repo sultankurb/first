@@ -138,6 +138,7 @@ class CourseInterfaceAdmin(AdminInterface):
         data = await state.get_data()
         print(data)
         await self.add_one(data=data)
+        await state.clear()
         await message.answer(text="Курс был добавлен", reply_markup=keyboard)
 
     @classmethod
