@@ -43,3 +43,8 @@ async def subscribe_to_course(callback_query: CallbackQuery):
 @users.message(Command("events"))
 async def courses_list(message: Message):
     await event_user_interface.send_all(message=message)
+
+
+@users.message(Command("subscribed"))
+async def subscribed_list(message: Message):
+    await message.answer(text="Hello brother, now its will create in some days")
