@@ -31,7 +31,7 @@ async def delete_course_handler(callback_query: CallbackQuery):
     )
 
 
-@router.callback_query(StateFilter(None), F.data.startswith("evnettitle_"))
+@router.callback_query(StateFilter(None), F.data.startswith("eventtitle_"))
 async def edit_title_callback(callback_query: CallbackQuery, state: FSMContext):
     await events_interface.update_title_callback(callback_query=callback_query, state=state)
 
@@ -41,7 +41,7 @@ async def edit_title(message: Message, state: FSMContext):
     await events_interface.update_title(state=state, message=message, keyboard=ADMIN_KEYBOARD)
 
 
-@router.callback_query(StateFilter(None), F.data.startswith("evntdescription_"))
+@router.callback_query(StateFilter(None), F.data.startswith("eventdescription_"))
 async def edit_description_callback(callback_query: CallbackQuery, state: FSMContext):
     await events_interface.update_description_callback(callback_query=callback_query, state=state)
 
@@ -51,7 +51,7 @@ async def edit_description(message: Message, state: FSMContext):
     await events_interface.update_description(state=state, message=message, keyboard=ADMIN_KEYBOARD)
 
 
-@router.callback_query(StateFilter(None), F.data.startswith("evnetphoto_"))
+@router.callback_query(StateFilter(None), F.data.startswith("eventphoto_"))
 async def edit_media_callback(callback_query: CallbackQuery, state: FSMContext):
     await events_interface.update_media_callback(callback_query=callback_query, state=state)
 
@@ -60,7 +60,7 @@ async def edit_media(message: Message, state: FSMContext):
     await events_interface.update_media(state=state, message=message, keyboard=ADMIN_KEYBOARD)
 
 
-@router.callback_query(StateFilter(None), F.data.startswith("evnetstatus_"))
+@router.callback_query(StateFilter(None), F.data.startswith("eventstatus_"))
 async def edit_title_callback(callback_query: CallbackQuery, state: FSMContext):
     await events_interface.update_status_callback(callback_query=callback_query, state=state)
 

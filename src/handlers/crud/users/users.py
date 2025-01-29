@@ -10,7 +10,7 @@ class UsersManager:
 
     async def select_user_by(
             self,
-            users_id: Optional[int] = None
+            users_id: int
     ):
         async with async_session_maker() as session:
             stmt = select(self.model).filter_by(users_id=users_id)

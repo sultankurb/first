@@ -27,10 +27,10 @@ class EventsInterface(AdminInterface):
                     caption=f"{i.title}\n{i.description}\n{i.is_active}",
                     reply_markup=get_callback_buttons(
                         btns={
-                            "заглавие": f"evnttitle_{i.pk}",
-                            "описание": f"evntdescription_{i.pk}",
-                            "фото": f"evntphoto_{i.pk}",
-                            "статус": f"evntstatus_{i.is_active}",
+                            "заглавие": f"eventtitle_{i.pk}",
+                            "описание": f"eventdescription_{i.pk}",
+                            "фото": f"eventphoto_{i.pk}",
+                            "статус": f"eventstatus_{i.is_active}",
                             "удалить": f"eventdelete_{i.pk}"
                         }
                     )

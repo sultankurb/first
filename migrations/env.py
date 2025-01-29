@@ -2,7 +2,7 @@ import asyncio
 from logging.config import fileConfig
 from src.database import Base
 from src.settings import settings
-from src.database.models import Course, Event, User
+from src.database.models import Course, Event, User, CourseSub
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config

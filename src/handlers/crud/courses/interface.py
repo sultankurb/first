@@ -8,6 +8,7 @@ from .states import (
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 from src.keyboards.in_line import get_callback_buttons
 from src.utils import AdminInterface, UsersInterface
+from .depends import sub_to_course, send_subscribe
 from aiogram.fsm.context import FSMContext
 from src.database.models import Course
 
@@ -179,13 +180,34 @@ class CourseInterfaceAdmin(AdminInterface):
 class CourseForUsersInterface(UsersInterface):
     model = Course
 
+
     async def send_all_courses(self, message: Message):
         course_list = await self.get_all()
         if course_list:
             for course in course_list:
                 await message.answer_photo(
                     photo=course.media_url,
-                    caption=f"{course.title}\n{course.description}"
+                    caption=f"{course.title}\n{course.description}",
+                    reply_markup=get_callback_buttons(
+                        btns={"подписаться": f"coursesub_{course.pk}"}
+                    )
                 )
         else:
             await message.answer(text="здесь ничего нет пока что")
+
+    @classmethod
+    async def __subscribe_user_to_course(cls, course_id: int, user_id):
+        await sub_to_course(data={"course_id": course_id, "user_id": user_id})
+
+    async def subscribe_callback(self, callback_query: CallbackQuery):
+        course_pk = callback_query.data.split("_")[-1]
+        await self.__subscribe_user_to_course(
+            course_id=int(course_pk),
+            user_id=callback_query.message.from_user.id
+        )
+        await send_subscribe(data={
+            "fullname": callback_query.from_user.full_name,
+            "username": callback_query.message.from_user.username
+        }
+        )
+

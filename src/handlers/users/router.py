@@ -3,8 +3,8 @@ from src.handlers.crud.events import UsersEventsInterface
 from aiogram.filters import CommandStart, Command
 from src.database.models.users import UsersModel
 from src.handlers.crud.users import UsersManager
-from aiogram.types import Message
-from aiogram import Router
+from aiogram.types import Message, CallbackQuery
+from aiogram import Router, F
 
 
 users = Router()
@@ -33,6 +33,11 @@ async def hello_user_handler(message: Message):
 @users.message(Command("courses"))
 async def courses_list(message: Message):
     await course_user_interface.send_all_courses(message=message)
+
+
+@users.callback_query(F.data.startswith("coursesub_"))
+async def subscribe_to_course(callback_query: CallbackQuery):
+    await course_user_interface.subscribe_callback(callback_query=callback_query)
 
 
 @users.message(Command("events"))
